@@ -25,24 +25,26 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class AppConfig @Inject() (servicesConfig: ServicesConfig, config: Configuration) {
 
-  val welshLanguageSupportEnabled: Boolean =
+  def welshLanguageSupportEnabled: Boolean =
     config.getOptional[Boolean]("features.welsh-language-support").getOrElse(false)
 
-  val host: String = config.get[String]("host")
+  def host: String = config.get[String]("host")
 
-  private val contactHost                  = config.get[String]("contact-frontend.host")
-  private val contactFormServiceIdentifier = config.get[String]("serviceId")
+  private def contactHost                  = config.get[String]("contact-frontend.host")
+  private def contactFormServiceIdentifier = config.get[String]("serviceId")
 
   def feedbackUrl(implicit request: RequestHeader): String =
     s"$contactHost/contact/beta-feedback?service=$contactFormServiceIdentifier&backUrl=${host + request.uri}"
 
-  val loginUrl: String         = config.get[String]("urls.login")
-  val loginContinueUrl: String = config.get[String]("urls.loginContinue")
-  val signOutUrl: String       = config.get[String]("urls.signOut")
+  def loginUrl: String         = config.get[String]("urls.login")
+  def loginContinueUrl: String = config.get[String]("urls.loginContinue")
+  def signOutUrl: String       = config.get[String]("urls.signOut")
 
-  private val exitSurveyBaseUrl: String = config.get[String]("feedback-frontend.host")
-  val exitSurveyUrl: String             = s"$exitSurveyBaseUrl/feedback/$contactFormServiceIdentifier"
+  private def exitSurveyBaseUrl: String = config.get[String]("feedback-frontend.host")
+  def exitSurveyUrl: String             = s"$exitSurveyBaseUrl/feedback/$contactFormServiceIdentifier"
 
-  val notificationTemplateDownloadUrl: String = servicesConfig.baseUrl("submission-frontend") + "/senior-accounting-officer/submission/download/notification/template"
+  def notificationTemplateDownloadUrl: String = servicesConfig.baseUrl(
+    "submission-frontend"
+  ) + "/senior-accounting-officer/submission/download/notification/template"
 
 }
