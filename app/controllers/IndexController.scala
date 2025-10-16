@@ -52,7 +52,7 @@ class IndexController @Inject (appConfig: AppConfig)(
       dueDate = LocalDate.now()
     )
 
-    Ok(hubView(companyDetails, notificationDetails, certificationDetails, appConfig.notificationTemplateDownloadUrl))
+    Ok(hubView(companyDetails, notificationDetails, certificationDetails))
   }
 
 }

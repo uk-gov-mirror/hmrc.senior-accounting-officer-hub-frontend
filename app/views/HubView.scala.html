@@ -16,14 +16,14 @@
 
 @import models.{CompanyDetails,NotificationDetails,CertificationDetails}
 @import java.time.format.DateTimeFormatter
+@import config.AppConfig
 
-@this(layout: templates.Layout)
+@this(appConfig: AppConfig, layout: templates.Layout)
 
 @(
   companyDetails:CompanyDetails,
   notificationDetails: NotificationDetails,
-  certificationDetails: CertificationDetails,
-  notificationTemplateDownloadUrl: String
+  certificationDetails: CertificationDetails
 )(using request: RequestHeader, messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("hub.dashboard.title"))) {
@@ -69,7 +69,7 @@
        <dt class="govuk-summary-list__key">@messages("hub.dashboard.notificationDetails.section.row.template.label")</dt>
 
        <dd class="govuk-summary-list__actions">
-        <a class="govuk-link" href=@notificationTemplateDownloadUrl>
+        <a class="govuk-link" href=@appConfig.notificationTemplateDownloadUrl>
          @messages("hub.dashboard.notificationDetails.section.row.link.download.text")
          <span class="govuk-visually-hidden"> @messages("hub.dashboard.notificationDetails.section.row.link.notificationTemplate.hiddenText")</span></a>
        </dd>
