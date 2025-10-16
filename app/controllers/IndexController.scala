@@ -16,7 +16,6 @@
 
 package controllers
 
-import config.AppConfig
 import controllers.actions.IdentifierAction
 import models.{CertificationDetails, CompanyDetails, NotificationDetails}
 import play.api.i18n.I18nSupport
@@ -28,7 +27,7 @@ import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class IndexController @Inject (appConfig: AppConfig)(
+class IndexController @Inject() (
     identify: IdentifierAction,
     mcc: MessagesControllerComponents,
     hubView: HubView
