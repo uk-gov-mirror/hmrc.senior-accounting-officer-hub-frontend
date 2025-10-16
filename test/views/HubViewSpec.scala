@@ -43,7 +43,9 @@ class HubViewSpec extends ViewSpecBase[HubView] {
   val certificationDetails: CertificationDetails = CertificationDetails(
     dueDate = testDate
   )
-  val doc: Document        = Jsoup.parse(SUT(companyDetails, notificationDetails, certificationDetails).toString)
+
+  val doc: Document =
+    Jsoup.parse(SUT(companyDetails, notificationDetails, certificationDetails, "dummyTemplateDownloadUrl").toString)
   val mainContent: Element = doc.getMainContent
 
   "HubView" must {

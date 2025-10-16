@@ -18,11 +18,12 @@ package config
 
 import play.api.Configuration
 import play.api.mvc.RequestHeader
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class AppConfig @Inject() (config: Configuration) {
+class AppConfig @Inject() (servicesConfig: ServicesConfig, config: Configuration) {
 
   val welshLanguageSupportEnabled: Boolean =
     config.getOptional[Boolean]("features.welsh-language-support").getOrElse(false)
@@ -41,5 +42,9 @@ class AppConfig @Inject() (config: Configuration) {
 
   private val exitSurveyBaseUrl: String = config.get[String]("feedback-frontend.host")
   val exitSurveyUrl: String             = s"$exitSurveyBaseUrl/feedback/$contactFormServiceIdentifier"
+
+  private def submissionBaseUrl: String =
+    servicesConfig.baseUrl("submission-frontend") + "/senior-accounting-officer/submission"
+  val notificationTemplateDownloadUrl: String = submissionBaseUrl + "/download/notification/template"
 
 }
