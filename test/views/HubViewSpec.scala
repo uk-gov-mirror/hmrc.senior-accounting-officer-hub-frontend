@@ -17,6 +17,7 @@
 package views
 
 import base.ViewSpecBase
+import config.AppConfig
 import models.{CertificationDetails, CompanyDetails, NotificationDetails}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.{Document, Element}
@@ -64,34 +65,51 @@ class HubViewSpec extends ViewSpecBase[HubView] {
     "must have correct content for company details section" in {
       val rows = mainContent.getElementById("section-company-details").select("div.govuk-summary-list__row")
       rows.size() mustBe 3
-      validateRow(row = rows.get(0), keyText = "Company name", actionText = "Fake Company Ltd")
-      validateRow(row = rows.get(1), keyText = "ReferenceID", actionText = "fakexxx1234")
-      validateRow(row = rows.get(2), keyText = "Accounting period", actionText = "30 July 2025 to 30 July 2025")
+      validateRow(row = rows.get(0), keyText = "Company name", actionText = "Fake Company Ltd", expectedHref = None)
+      validateRow(row = rows.get(1), keyText = "ReferenceID", actionText = "fakexxx1234", expectedHref = None)
+      validateRow(
+        row = rows.get(2),
+        keyText = "Accounting period",
+        actionText = "30 July 2025 to 30 July 2025",
+        expectedHref = None
+      )
     }
 
     "must have correct content for notification section" in {
+      AppConfig.setValue("senior-accounting-officer-submission-frontend.host", "submission-url")
+      val doc: Document =
+        Jsoup.parse(SUT(companyDetails, notificationDetails, certificationDetails).toString)
+      val mainContent: Element = doc.getMainContent
       val rows = mainContent.getElementById("section-notification").select("div.govuk-summary-list__row")
       rows.size() mustBe 5
 
       validateRow(
         row = rows.get(0),
         keyText = "Status",
-        actionText = "DUE"
+        actionText = "DUE",
+        expectedHref = None
       )
-      validateRow(row = rows.get(1), keyText = "Due date", actionText = "30 July 2025")
+      validateRow(row = rows.get(1), keyText = "Due date", actionText = "30 July 2025", expectedHref = None)
       validateRow(
         row = rows.get(2),
         keyText = "Template",
         actionText = "Download",
-        actionHiddenText = Some("the notification template")
+        actionHiddenText = Some("the notification template"),
+        expectedHref = Some("submission-url/senior-accounting-officer/submission/download/notification/template")
       )
       validateRow(
         row = rows.get(3),
         keyText = "Template guidance",
         actionText = "Read",
-        actionHiddenText = Some("the notification template guidance")
+        actionHiddenText = Some("the notification template guidance"),
+        expectedHref = Some("submission-url/senior-accounting-officer/submission/notification/guidance")
       )
-      validateRow(row = rows.get(4), keyText = "Submission history", actionText = "Not present yet")
+      validateRow(
+        row = rows.get(4),
+        keyText = "Submission history",
+        actionText = "Not present yet",
+        expectedHref = None
+      )
     }
 
     "must have correct content for certification section" in {
@@ -101,22 +119,30 @@ class HubViewSpec extends ViewSpecBase[HubView] {
       validateRow(
         row = rows.get(0),
         keyText = "Status",
-        actionText = "DUE"
+        actionText = "DUE",
+        expectedHref = None
       )
-      validateRow(row = rows.get(1), keyText = "Due date", actionText = "30 July 2025")
+      validateRow(row = rows.get(1), keyText = "Due date", actionText = "30 July 2025", expectedHref = None)
       validateRow(
         row = rows.get(2),
         keyText = "Template",
         actionText = "Download",
-        actionHiddenText = Some("the certification template")
+        actionHiddenText = Some("the certification template"),
+        expectedHref = None
       )
       validateRow(
         row = rows.get(3),
         keyText = "Template guidance",
         actionText = "Read",
-        actionHiddenText = Some("the certification template guidance")
+        actionHiddenText = Some("the certification template guidance"),
+        expectedHref = None
       )
-      validateRow(row = rows.get(4), keyText = "Submission history", actionText = "Not present yet")
+      validateRow(
+        row = rows.get(4),
+        keyText = "Submission history",
+        actionText = "Not present yet",
+        expectedHref = None
+      )
     }
 
     "must have correct linkText in submit notification link section" in {
@@ -144,8 +170,9 @@ class HubViewSpec extends ViewSpecBase[HubView] {
       row: Element,
       keyText: String,
       actionText: String,
-      actionHiddenText: Option[String] = None
-  ): Assertion = {
+      actionHiddenText: Option[String] = None,
+      expectedHref: Option[String] = None
+  ): Unit = {
     val rowKey    = row.select("dt.govuk-summary-list__key")
     val rowAction = row.select("dd.govuk-summary-list__actions")
     rowKey.size() mustBe 1
@@ -165,6 +192,13 @@ class HubViewSpec extends ViewSpecBase[HubView] {
     val actionTextFound = actionElement.text
     withClue("row actionText mismatch:\n") {
       actionTextFound mustBe actionText
+    }
+    expectedHref.foreach {
+      val anchor = row.select(".govuk-link")
+      val href   = anchor.attr("href")
+      withClue("href url mismatch:\n") {
+        href mustBe _
+      }
     }
   }
 }

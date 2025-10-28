@@ -43,7 +43,17 @@ class AppConfig @Inject() (servicesConfig: ServicesConfig, config: Configuration
   private def exitSurveyBaseUrl: String = config.get[String]("feedback-frontend.host")
   def exitSurveyUrl: String             = s"$exitSurveyBaseUrl/feedback/$contactFormServiceIdentifier"
 
-  def notificationTemplateDownloadUrl: String =
-    s"${config.get[String]("senior-accounting-officer-submission-frontend.host")}/senior-accounting-officer/submission/download/notification/template"
+  def submissionFrontendUrl: String = getValue("senior-accounting-officer-submission-frontend.host")
 
+  private def getValue(key: String): String =
+    sys.props
+      .get(key)
+      .getOrElse(
+        config.get[String](key)
+      )
+}
+
+object AppConfig {
+  def setValue(key: String, value: String): Unit =
+    sys.props.addOne((key, value)): Unit
 }
