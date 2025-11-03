@@ -19,8 +19,8 @@ package controllers.actions
 import base.SpecBase
 import config.AppConfig
 import controllers.routes
-import play.api.mvc.BodyParsers.Default
 import play.api.mvc.*
+import play.api.mvc.BodyParsers.Default
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import uk.gov.hmrc.auth.core.*

@@ -18,28 +18,42 @@ package config
 
 import play.api.Configuration
 import play.api.mvc.RequestHeader
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class AppConfig @Inject() (config: Configuration) {
+class AppConfig @Inject() (servicesConfig: ServicesConfig, config: Configuration) {
 
-  val welshLanguageSupportEnabled: Boolean =
+  def welshLanguageSupportEnabled: Boolean =
     config.getOptional[Boolean]("features.welsh-language-support").getOrElse(false)
 
-  val host: String = config.get[String]("host")
+  def host: String = config.get[String]("host")
 
-  private val contactHost                  = config.get[String]("contact-frontend.host")
-  private val contactFormServiceIdentifier = config.get[String]("serviceId")
+  private def contactHost                  = config.get[String]("contact-frontend.host")
+  private def contactFormServiceIdentifier = config.get[String]("serviceId")
 
   def feedbackUrl(implicit request: RequestHeader): String =
     s"$contactHost/contact/beta-feedback?service=$contactFormServiceIdentifier&backUrl=${host + request.uri}"
 
-  val loginUrl: String         = config.get[String]("urls.login")
-  val loginContinueUrl: String = config.get[String]("urls.loginContinue")
-  val signOutUrl: String       = config.get[String]("urls.signOut")
+  def loginUrl: String         = config.get[String]("urls.login")
+  def loginContinueUrl: String = config.get[String]("urls.loginContinue")
+  def signOutUrl: String       = config.get[String]("urls.signOut")
 
-  private val exitSurveyBaseUrl: String = config.get[String]("feedback-frontend.host")
-  val exitSurveyUrl: String             = s"$exitSurveyBaseUrl/feedback/$contactFormServiceIdentifier"
+  private def exitSurveyBaseUrl: String = config.get[String]("feedback-frontend.host")
+  def exitSurveyUrl: String             = s"$exitSurveyBaseUrl/feedback/$contactFormServiceIdentifier"
 
+  def submissionFrontendUrl: String = getValue("senior-accounting-officer-submission-frontend.host")
+
+  private def getValue(key: String): String =
+    sys.props
+      .get(key)
+      .getOrElse(
+        config.get[String](key)
+      )
+}
+
+object AppConfig {
+  def setValue(key: String, value: String): Unit =
+    sys.props.addOne((key, value)): Unit
 }
